@@ -32,3 +32,15 @@ Future<HotPreference> getHotOneStopApi() async {
     await dioRequest.get(HttpConstants.HOT_ONE_STOP),
   );
 }
+
+Future<List<GoodDetailItem>> getHomeRecommendApi(
+  Map<String, dynamic> params,
+) async {
+  return ((await dioRequest.get(
+            HttpConstants.HOME_RECOMMEND,
+            queryParameters: params,
+          ))
+          as List)
+      .map((item) => GoodDetailItem.fromJson(item as Map<String, dynamic>))
+      .toList();
+}

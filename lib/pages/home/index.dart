@@ -37,6 +37,12 @@ class _HomeViewState extends State<HomeView> {
   HotPreference _hotPreference = HotPreference(id: "", title: "", subTypes: []);
   HotPreference _hotInVogue = HotPreference(id: "", title: "", subTypes: []);
   HotPreference _hotOneStop = HotPreference(id: "", title: "", subTypes: []);
+  List<GoodDetailItem> _homeRecommend = [];
+
+  final ScrollController _scrollController = ScrollController();
+  int _page = 1;
+  bool _isLoading = false;
+  bool _hasMore = true;
 
   @override
   void initState() {
@@ -46,6 +52,17 @@ class _HomeViewState extends State<HomeView> {
     _getHotPreference();
     _getHotInVogue();
     _getHotOneStop();
+    _getHomeRecommend();
+    _registerEvent();
+  }
+
+  void _registerEvent() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _getHomeRecommend();
+      }
+    });
   }
 
   Future<void> _getCategoryList() async {
@@ -73,7 +90,22 @@ class _HomeViewState extends State<HomeView> {
     setState(() {});
   }
 
-  List<Widget> getScrollChildren() {
+  Future<void> _getHomeRecommend() async {
+    if (_isLoading || !_hasMore) {
+      return;
+    }
+    _isLoading = true;
+    _homeRecommend = await getHomeRecommendApi({'limit': 10 * _page});
+    _isLoading = false;
+
+    if (_homeRecommend.length < 10 * _page) {
+      _hasMore = false;
+    }
+    setState(() {});
+    _page++;
+  }
+
+  List<Widget> _getScrollChildren() {
     return [
       SliverToBoxAdapter(child: Carousel(bannerList: _bannerList)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
@@ -97,13 +129,16 @@ class _HomeViewState extends State<HomeView> {
       SliverToBoxAdapter(child: SizedBox(height: 10)),
       SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        sliver: More(),
+        sliver: More(recommendItems: _homeRecommend),
       ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(slivers: getScrollChildren());
+    return CustomScrollView(
+      controller: _scrollController,
+      slivers: _getScrollChildren(),
+    );
   }
 }
