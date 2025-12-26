@@ -5,6 +5,7 @@ import 'package:flutter_learn_shop/pages/home/components/category.dart';
 import 'package:flutter_learn_shop/pages/home/components/hot.dart';
 import 'package:flutter_learn_shop/pages/home/components/more.dart';
 import 'package:flutter_learn_shop/pages/home/components/suggestion.dart';
+import 'package:flutter_learn_shop/utils/toast.dart';
 import 'package:flutter_learn_shop/viewmodels/home.dart';
 
 class HomeView extends StatefulWidget {
@@ -38,6 +39,7 @@ class _HomeViewState extends State<HomeView> {
   HotPreference _hotInVogue = HotPreference(id: "", title: "", subTypes: []);
   HotPreference _hotOneStop = HotPreference(id: "", title: "", subTypes: []);
   List<GoodDetailItem> _homeRecommend = [];
+  double _scrollOffset = 0;
 
   final ScrollController _scrollController = ScrollController();
   int _page = 1;
@@ -47,13 +49,18 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    _getBannerList();
-    _getCategoryList();
-    _getHotPreference();
-    _getHotInVogue();
-    _getHotOneStop();
-    _getHomeRecommend();
+    // _getBannerList();
+    // _getCategoryList();
+    // _getHotPreference();
+    // _getHotInVogue();
+    // _getHotOneStop();
+    // _getHomeRecommend();
     _registerEvent();
+    Future.microtask(() {
+      _scrollOffset = 100;
+      setState(() {});
+      _key.currentState?.show();
+    });
   }
 
   void _registerEvent() {
@@ -67,27 +74,22 @@ class _HomeViewState extends State<HomeView> {
 
   Future<void> _getCategoryList() async {
     _categoryList = await getCategoryListApi();
-    setState(() {});
   }
 
   Future<void> _getBannerList() async {
     _bannerList = await getBannerListApi();
-    setState(() {});
   }
 
   Future<void> _getHotPreference() async {
     _hotPreference = await getHotPreferenceApi();
-    setState(() {});
   }
 
   Future<void> _getHotInVogue() async {
     _hotInVogue = await getHotInVogueApi();
-    setState(() {});
   }
 
   Future<void> _getHotOneStop() async {
     _hotOneStop = await getHotOneStopApi();
-    setState(() {});
   }
 
   Future<void> _getHomeRecommend() async {
@@ -96,13 +98,27 @@ class _HomeViewState extends State<HomeView> {
     }
     _isLoading = true;
     _homeRecommend = await getHomeRecommendApi({'limit': 10 * _page});
+    setState(() {});
     _isLoading = false;
-
     if (_homeRecommend.length < 10 * _page) {
       _hasMore = false;
     }
-    setState(() {});
     _page++;
+  }
+
+  Future<void> _onRefresh() async {
+    _page = 1;
+    _isLoading = false;
+    _hasMore = true;
+    await _getBannerList();
+    await _getCategoryList();
+    await _getHotPreference();
+    await _getHotInVogue();
+    await _getHotOneStop();
+    await _getHomeRecommend();
+    Toast.showToast(context, "刷新成功");
+    _scrollOffset = 0;
+    setState(() {});
   }
 
   List<Widget> _getScrollChildren() {
@@ -134,11 +150,21 @@ class _HomeViewState extends State<HomeView> {
     ];
   }
 
+  final GlobalKey<RefreshIndicatorState> _key = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      controller: _scrollController,
-      slivers: _getScrollChildren(),
+    return RefreshIndicator(
+      key: _key,
+      onRefresh: _onRefresh,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        padding: EdgeInsets.only(top: _scrollOffset),
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: _getScrollChildren(),
+        ),
+      ),
     );
   }
 }

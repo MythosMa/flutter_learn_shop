@@ -11,4 +11,5 @@ class HttpConstants {
   static const String HOT_IN_VOGUE = "/hot/inVogue";
   static const String HOT_ONE_STOP = "/hot/oneStop";
   static const String HOME_RECOMMEND = "/home/recommend";
+  static const String GUESS_LIST = "/home/goods/guessLike";
 }
