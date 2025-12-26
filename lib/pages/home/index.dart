@@ -15,7 +15,8 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  List<BannerItem> bannerList = [
+  List<CategoryItem> _categoryList = [];
+  List<BannerItem> _bannerList = [
     // BannerItem(
     //   id: "1",
     //   imageUrl:
@@ -33,24 +34,52 @@ class _HomeViewState extends State<HomeView> {
     // ),
   ];
 
+  HotPreference _hotPreference = HotPreference(id: "", title: "", subTypes: []);
+  HotPreference _hotInVogue = HotPreference(id: "", title: "", subTypes: []);
+  HotPreference _hotOneStop = HotPreference(id: "", title: "", subTypes: []);
+
   @override
   void initState() {
     super.initState();
     _getBannerList();
+    _getCategoryList();
+    _getHotPreference();
+    _getHotInVogue();
+    _getHotOneStop();
+  }
+
+  Future<void> _getCategoryList() async {
+    _categoryList = await getCategoryListApi();
+    setState(() {});
   }
 
   Future<void> _getBannerList() async {
-    bannerList = await getBannerListApi();
+    _bannerList = await getBannerListApi();
+    setState(() {});
+  }
+
+  Future<void> _getHotPreference() async {
+    _hotPreference = await getHotPreferenceApi();
+    setState(() {});
+  }
+
+  Future<void> _getHotInVogue() async {
+    _hotInVogue = await getHotInVogueApi();
+    setState(() {});
+  }
+
+  Future<void> _getHotOneStop() async {
+    _hotOneStop = await getHotOneStopApi();
     setState(() {});
   }
 
   List<Widget> getScrollChildren() {
     return [
-      SliverToBoxAdapter(child: Carousel(bannerList: bannerList)),
+      SliverToBoxAdapter(child: Carousel(bannerList: _bannerList)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
-      SliverToBoxAdapter(child: Category()),
+      SliverToBoxAdapter(child: Category(categoryList: _categoryList)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
-      SliverToBoxAdapter(child: Suggestion()),
+      SliverToBoxAdapter(child: Suggestion(hotPreference: _hotPreference)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
       SliverToBoxAdapter(
         child: Padding(
@@ -59,8 +88,8 @@ class _HomeViewState extends State<HomeView> {
             direction: Axis.horizontal,
             spacing: 10,
             children: [
-              Expanded(child: Hot()),
-              Expanded(child: Hot()),
+              Expanded(child: Hot(hotPreference: _hotInVogue, type: 1)),
+              Expanded(child: Hot(hotPreference: _hotOneStop, type: 2)),
             ],
           ),
         ),

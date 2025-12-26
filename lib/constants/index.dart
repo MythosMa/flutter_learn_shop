@@ -6,4 +6,8 @@ class GlobalConstants {
 
 class HttpConstants {
   static const String BANNER_LIST = "/home/banner";
+  static const String CATEGORY_LIST = "/home/category/head";
+  static const String HOT_PREFERENCE = "/hot/preference";
+  static const String HOT_IN_VOGUE = "/hot/inVogue";
+  static const String HOT_ONE_STOP = "/hot/oneStop";
 }
