@@ -58,11 +58,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: IndexedStack(
-          index: _currentTabIndex,
-          children: [HomeView(), CategoryView(), CartView(), MyView()],
-        ),
+      body: IndexedStack(
+        index: _currentTabIndex,
+        children: [HomeView(), CategoryView(), CartView(), MyView()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.black,

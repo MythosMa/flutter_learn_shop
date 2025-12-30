@@ -120,7 +120,6 @@ class _MyViewState extends State<MyView> {
           }),
           const SizedBox(width: 12),
           Expanded(
-            flex: 4,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

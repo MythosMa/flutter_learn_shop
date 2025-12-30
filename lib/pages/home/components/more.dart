@@ -63,17 +63,17 @@ class _MoreState extends State<More> {
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
-                  children: [
-                    TextSpan(text: " "),
-                    TextSpan(
-                      text: "¥${item.price}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        decoration: TextDecoration.lineThrough,
-                      ),
-                    ),
-                  ],
+                  // children: [
+                  //   TextSpan(text: " "),
+                  //   TextSpan(
+                  //     text: "¥${item.price}",
+                  //     style: TextStyle(
+                  //       fontSize: 12,
+                  //       color: Colors.grey,
+                  //       decoration: TextDecoration.lineThrough,
+                  //     ),
+                  //   ),
+                  // ],
                 ),
               ),
               Text(

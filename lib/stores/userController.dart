@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 class UserController extends GetxController {
   var user = UserInfo.fromJson({}).obs;
 
-  updateUserInto(UserInfo newUser) {
+  void updateUserInto(UserInfo newUser) {
     user.value = newUser;
   }
 }

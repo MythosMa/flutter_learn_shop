@@ -59,40 +59,42 @@ class _SuggestionState extends State<Suggestion> {
     List<GoodsItem> items = _getDisplayItems();
     return List.generate(items.length, (index) {
       GoodsItem item = items[index];
-      return Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadiusGeometry.circular(10),
-            child: Image.network(
-              errorBuilder: (context, error, stackTrace) => Image.asset(
-                "lib/assets/home_cmd_inner.png",
-                width: 80,
+      return Expanded(
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadiusGeometry.circular(10),
+              child: Image.network(
+                errorBuilder: (context, error, stackTrace) => Image.asset(
+                  "lib/assets/home_cmd_inner.png",
+                  // width: 80,
+                  height: 120,
+                  fit: BoxFit.cover,
+                ),
+                item.picture,
+                // width: 80,
                 height: 120,
                 fit: BoxFit.cover,
               ),
-              item.picture,
-              width: 80,
-              height: 120,
-              fit: BoxFit.cover,
             ),
-          ),
-          SizedBox(height: 5),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              "¥${item.price}",
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+            SizedBox(height: 5),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                "¥${item.price}",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     });
   }

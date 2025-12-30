@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class LoadingDialog {
+  static bool _isShow = false;
   static void show(BuildContext context, {String message = "加载中..."}) {
+    if (_isShow) {
+      return;
+    }
+    _isShow = true;
     showDialog(
       context: context,
       builder: (context) {
@@ -30,6 +35,10 @@ class LoadingDialog {
   }
 
   static void hide(BuildContext context) {
+    if (!_isShow) {
+      return;
+    }
+    _isShow = false;
     Navigator.pop(context);
   }
 }
