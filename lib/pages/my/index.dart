@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_learn_shop/api/my.dart';
 import 'package:flutter_learn_shop/pages/home/components/more.dart';
 import 'package:flutter_learn_shop/pages/my/components/guess.dart';
+import 'package:flutter_learn_shop/stores/tokenManager.dart';
+import 'package:flutter_learn_shop/stores/userController.dart';
 import 'package:flutter_learn_shop/viewmodels/home.dart';
+import 'package:flutter_learn_shop/viewmodels/user.dart';
+import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class MyView extends StatefulWidget {
   const MyView({super.key});
@@ -12,6 +17,8 @@ class MyView extends StatefulWidget {
 }
 
 class _MyViewState extends State<MyView> {
+  final UserController _userController = Get.find();
+
   List<GoodDetailItem> _list = [];
   Map<String, dynamic> _params = {"page": 1, "pageSize": 10};
 
@@ -51,6 +58,45 @@ class _MyViewState extends State<MyView> {
     _params["page"]++;
   }
 
+  Widget _getLogout() {
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text("提示"),
+                content: Text("确认退出登录吗？"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("取消"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      tokenManager.removeToken();
+                      _userController.updateUserInto(UserInfo.fromJson({}));
+                      Navigator.pop(context);
+                    },
+                    child: Text("确定"),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: Text(
+          "退出登录",
+          textAlign: TextAlign.right,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+
   Widget _buildHeader() {
     return Container(
       decoration: BoxDecoration(
@@ -63,28 +109,48 @@ class _MyViewState extends State<MyView> {
       padding: const EdgeInsets.only(left: 20, right: 40, top: 80, bottom: 20),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 26,
-            backgroundImage: const AssetImage('lib/assets/goods_avatar.png'),
-            backgroundColor: Colors.white,
-          ),
+          Obx(() {
+            return CircleAvatar(
+              radius: 26,
+              backgroundImage: _userController.user.value.id.isNotEmpty
+                  ? NetworkImage(_userController.user.value.avatar)
+                  : AssetImage('lib/assets/goods_avatar.png'),
+              backgroundColor: Colors.white,
+            );
+          }),
           const SizedBox(width: 12),
           Expanded(
             flex: 4,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () {},
-                  child: Text(
-                    '立即登录',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+                Obx(() {
+                  return GestureDetector(
+                    onTap: () {
+                      if (_userController.user.value.id.isEmpty) {
+                        Navigator.pushNamed(context, "/login");
+                      }
+                    },
+                    child: Text(
+                      _userController.user.value.id.isNotEmpty
+                          ? _userController.user.value.nickname
+                          : '立即登录',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }),
               ],
             ),
           ),
+          Obx(() {
+            return _userController.user.value.id.isNotEmpty
+                ? _getLogout()
+                : Text("");
+          }),
         ],
       ),
     );

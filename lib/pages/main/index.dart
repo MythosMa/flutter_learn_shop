@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_learn_shop/api/user.dart';
 import 'package:flutter_learn_shop/pages/cart/index.dart';
 import 'package:flutter_learn_shop/pages/category/index.dart';
 import 'package:flutter_learn_shop/pages/home/index.dart';
 import 'package:flutter_learn_shop/pages/my/index.dart';
+import 'package:flutter_learn_shop/stores/tokenManager.dart';
+import 'package:flutter_learn_shop/stores/userController.dart';
+import 'package:get/get.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -12,6 +16,20 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  @override
+  void initState() {
+    super.initState();
+    _initUser();
+  }
+
+  final UserController _userController = Get.put(UserController());
+  Future<void> _initUser() async {
+    await tokenManager.init();
+    if (tokenManager.getToken().isNotEmpty) {
+      _userController.updateUserInto(await getUserInfoApi());
+    }
+  }
+
   final List<Map<String, String>> _tabList = [
     {
       "title": "首页",
